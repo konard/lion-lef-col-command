@@ -5,6 +5,7 @@ export { CompletionMenu } from "./editor-component/completion-menu/completion-me
 export { CommandPalette } from "./editor-component/command-palette/command-palette.js";
 export { InlineTools } from "./editor-component/inline-tools/inline-tools.js";
 export { AIIntegration } from "./editor-component/ai-integration/ai-integration.js";
+export { EditorOutput } from "./editor-component/editor-output/editor-output.js";
 
 export { AIController } from "./editor-component/controllers/ai-controller.js";
 export { CompletionController } from "./editor-component/controllers/completion-controller.js";

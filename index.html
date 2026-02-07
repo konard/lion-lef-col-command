@@ -50,16 +50,15 @@
     .feature-card p { font-size: 12px; margin: 0; }
     .output-panel {
       margin-top: 16px;
-      padding: 12px;
       background: #ffffff;
       border: 1px solid #e0e0e0;
       border-radius: 8px;
       font-size: 13px;
+      min-height: 60px;
     }
     @media (prefers-color-scheme: dark) {
       .output-panel { background: #252530; border-color: #444; }
     }
-    .output-panel pre { white-space: pre-wrap; word-break: break-all; }
     .btn-row { display: flex; gap: 8px; margin-top: 12px; }
     .btn {
       padding: 6px 14px;
@@ -98,12 +97,12 @@
         <p>Type "/" to access commands for headings, code blocks, quotes, and more</p>
       </div>
       <div class="feature-card">
-        <h3>@Mention AI</h3>
-        <p>Type @model-name to trigger immediate AI queries (e.g. @gpt-5.2 your question)</p>
+        <h3>@Mention</h3>
+        <p>Type @model-name for AI queries, extensible to search users or other mentions</p>
       </div>
       <div class="feature-card">
         <h3>AI Integration</h3>
-        <p>Configurable AI provider with model settings accessible via popover panel</p>
+        <p>Configurable AI provider with model settings, auto-inserts responses as blocks</p>
       </div>
       <div class="feature-card">
         <h3>Dark Mode</h3>
@@ -113,7 +112,7 @@
 
     <div class="demo-section">
       <h2>Editor Demo</h2>
-      <p>Try the editor below. Type "/" for commands, use Shift+Enter to expand, or type @model-name to trigger AI.</p>
+      <p>Try the editor below. Type "/" for commands, Shift+Enter for newlines in a block, Tab for completions, or @model-name for AI.</p>
 
       <advanced-text-editor
         id="demo-editor"
@@ -131,8 +130,10 @@
         <button class="btn" onclick="enableMockAI()">Enable Mock AI</button>
       </div>
 
-      <div class="output-panel" id="output">
-        <pre>Click "Get Content" to see the editor content here.</pre>
+      <h2 style="margin-top: 24px;">Output Preview</h2>
+      <p>Live rendered output of the editor content as web-component blocks.</p>
+      <div class="output-panel">
+        <col-output id="output-preview"></col-output>
       </div>
     </div>
   </main>
@@ -141,19 +142,23 @@
     import './src/index.ts';
     import { MockAIProvider } from './src/editor-component/utils/ai-provider.ts';
 
+    const editor = document.getElementById('demo-editor');
+    const outputPreview = document.getElementById('output-preview');
+
+    editor.addEventListener('editor-change', () => {
+      outputPreview.blocks = editor.getBlocks();
+    });
+
     window.getContent = function () {
-      const editor = document.getElementById('demo-editor');
-      const content = editor.getContent();
-      document.getElementById('output').innerHTML = '<pre>' + (content || '(empty)') + '</pre>';
+      outputPreview.blocks = editor.getBlocks();
     };
 
     window.setContent = function () {
-      const editor = document.getElementById('demo-editor');
       editor.setContent('Welcome to Lit Editor!\nThis is a block-based editor built with Lit.\nTry typing "/" to see the command palette.\nType @gpt-4 followed by a question to trigger AI.');
+      outputPreview.blocks = editor.getBlocks();
     };
 
     window.enableMockAI = function () {
-      const editor = document.getElementById('demo-editor');
       editor.setAIProvider(new MockAIProvider());
       alert('Mock AI provider enabled. Click the AI button in the editor footer or type @model-name in a block.');
     };
