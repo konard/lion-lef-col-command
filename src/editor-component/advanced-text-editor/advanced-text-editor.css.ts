@@ -11,6 +11,7 @@ export const styles = css`
     --editor-text: #333333;
     --editor-muted: #999999;
     --editor-placeholder: #aaaaaa;
+    position: relative;
   }
 
   .editor-root {
@@ -19,6 +20,14 @@ export const styles = css`
     background: var(--editor-bg);
     overflow: hidden;
     transition: border-color 0.15s;
+  }
+
+  .popover-anchor {
+    position: absolute;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    anchor-name: --editor-anchor;
   }
 
   .editor-root:focus-within {

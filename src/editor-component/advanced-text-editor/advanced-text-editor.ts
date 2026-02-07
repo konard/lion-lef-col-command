@@ -21,6 +21,12 @@ export interface MentionMatch {
   blockId: string;
 }
 
+export interface MentionProvider {
+  id: string;
+  trigger: RegExp;
+  onMatch: (match: RegExpMatchArray, blockId: string) => void;
+}
+
 @customElement("advanced-text-editor")
 export class AdvancedTextEditor extends LitElement {
   static styles = styles;
@@ -65,18 +71,13 @@ export class AdvancedTextEditor extends LitElement {
   selectedText = "";
 
   @state()
-  completionPosition = { top: 0, left: 0 };
-
-  @state()
-  commandPalettePosition = { top: 0, left: 0 };
-
-  @state()
-  inlineToolsPosition = { top: 0, left: 0 };
+  anchorPosition = { top: 0, left: 0 };
 
   @state()
   pendingMention: MentionMatch | null = null;
 
   customInlineTools: InlineTool[] = [];
+  private mentionProviders: MentionProvider[] = [];
 
   completionController = new CompletionController(this);
 
@@ -92,6 +93,7 @@ export class AdvancedTextEditor extends LitElement {
     if (this.commandsEnabled) {
       this.registerDefaultCommands();
     }
+    this.registerDefaultMentionProvider();
   }
 
   disconnectedCallback(): void {
@@ -131,6 +133,10 @@ export class AdvancedTextEditor extends LitElement {
     this.customInlineTools = [...this.customInlineTools, tool];
   }
 
+  addMentionProvider(provider: MentionProvider): void {
+    this.mentionProviders.push(provider);
+  }
+
   getContent(): string {
     return this.blocks.map((b) => b.content).join("\n");
   }
@@ -162,7 +168,7 @@ export class AdvancedTextEditor extends LitElement {
         const lastWord = this.getLastWord(block.content);
         if (lastWord) {
           this.completionController.requestSuggestions(lastWord);
-          this.updateCompletionPosition();
+          this.updateAnchorToFocusedBlock();
         } else {
           this.completionController.dismiss();
         }
@@ -188,7 +194,28 @@ export class AdvancedTextEditor extends LitElement {
 
     if (keyEvent.key === "Enter" && keyEvent.shiftKey) {
       keyEvent.preventDefault();
-      this.expanded = !this.expanded;
+      const blockManager = this.shadowRoot?.querySelector("block-manager") as any;
+      if (blockManager) {
+        const textarea = blockManager.shadowRoot?.querySelector(
+          `textarea[data-block-id="${e.detail.blockId}"]`,
+        ) as HTMLTextAreaElement | null;
+        if (textarea) {
+          const start = textarea.selectionStart;
+          const before = textarea.value.substring(0, start);
+          const after = textarea.value.substring(textarea.selectionEnd);
+          blockManager.updateBlockContent(e.detail.blockId, before + "\n" + after);
+          this.updateComplete.then(() => {
+            const el = blockManager.shadowRoot?.querySelector(
+              `textarea[data-block-id="${e.detail.blockId}"]`,
+            ) as HTMLTextAreaElement | null;
+            if (el) {
+              el.selectionStart = start + 1;
+              el.selectionEnd = start + 1;
+              blockManager.autoResizeTextarea(el);
+            }
+          });
+        }
+      }
       return;
     }
 
@@ -221,6 +248,18 @@ export class AdvancedTextEditor extends LitElement {
         return;
       }
     }
+
+    if (keyEvent.key === "Tab" && this.completionEnabled && !this.completionController.isActive) {
+      const block = this.blocks.find((b) => b.id === e.detail.blockId);
+      if (block) {
+        const lastWord = this.getLastWord(block.content);
+        if (lastWord && lastWord.length >= 2) {
+          keyEvent.preventDefault();
+          this.completionController.requestSuggestions(lastWord);
+          this.updateAnchorToFocusedBlock();
+        }
+      }
+    }
   }
 
   handleBlockFocus(e: CustomEvent<{ blockId: string }>): void {
@@ -238,9 +277,10 @@ export class AdvancedTextEditor extends LitElement {
     const { text, rect } = e.detail;
     if (text.length > 0) {
       this.selectedText = text;
-      this.inlineToolsPosition = {
-        top: rect.top - 44,
-        left: rect.left + rect.width / 2,
+      const hostRect = this.getBoundingClientRect();
+      this.anchorPosition = {
+        top: rect.top - hostRect.top + rect.height / 2,
+        left: rect.left - hostRect.left + rect.width / 2,
       };
       this.inlineToolsActive = true;
     } else {
@@ -273,40 +313,48 @@ export class AdvancedTextEditor extends LitElement {
     this.showAIPanel = !this.showAIPanel;
   }
 
-  private checkForMention(block: Block): void {
-    const mentionRegex = /@([\w.-]+)\s+(.*)/;
-    const match = block.content.match(mentionRegex);
-    if (match) {
-      const model = match[1];
-      const query = match[2].trim();
-      if (query.length > 0) {
-        this.pendingMention = { model, query, blockId: block.id };
-        this.showAIPanel = true;
-        this.dispatchEvent(
-          new CustomEvent("mention-trigger", {
-            detail: { model, query, blockId: block.id },
-            bubbles: true,
-            composed: true,
-          }),
-        );
+  private registerDefaultMentionProvider(): void {
+    this.addMentionProvider({
+      id: "ai",
+      trigger: /@([\w.-]+)\s+(.*)/,
+      onMatch: (match, blockId) => {
+        const model = match[1];
+        const query = match[2].trim();
+        if (query.length > 0) {
+          this.pendingMention = { model, query, blockId };
+          this.showAIPanel = true;
+          this.dispatchEvent(
+            new CustomEvent("mention-trigger", {
+              detail: { model, query, blockId },
+              bubbles: true,
+              composed: true,
+            }),
+          );
 
-        this.updateComplete.then(() => {
-          const aiPanel = this.shadowRoot?.querySelector("ai-integration") as any;
-          if (aiPanel) {
-            aiPanel.prompt = `[${model}] ${query}`;
-            aiPanel.sendPrompt();
-          }
-        });
+          this.updateComplete.then(() => {
+            const aiPanel = this.shadowRoot?.querySelector("ai-integration") as any;
+            if (aiPanel) {
+              aiPanel.prompt = `[${model}] ${query}`;
+              aiPanel.sendPrompt();
+            }
+          });
+        }
+      },
+    });
+  }
+
+  private checkForMention(block: Block): void {
+    for (const provider of this.mentionProviders) {
+      const match = block.content.match(provider.trigger);
+      if (match) {
+        provider.onMatch(match, block.id);
+        return;
       }
     }
   }
 
   private openCommandPalette(): void {
-    const blockEl = this.getFocusedTextarea();
-    if (blockEl) {
-      const rect = blockEl.getBoundingClientRect();
-      this.commandPalettePosition = { top: rect.bottom + 4, left: rect.left };
-    }
+    this.updateAnchorToFocusedBlock();
     this.commandPaletteActive = true;
 
     this.updateComplete.then(() => {
@@ -336,11 +384,15 @@ export class AdvancedTextEditor extends LitElement {
     this.completionController.dismiss();
   }
 
-  private updateCompletionPosition(): void {
+  private updateAnchorToFocusedBlock(): void {
     const blockEl = this.getFocusedTextarea();
     if (blockEl) {
       const rect = blockEl.getBoundingClientRect();
-      this.completionPosition = { top: rect.bottom + 4, left: rect.left };
+      const hostRect = this.getBoundingClientRect();
+      this.anchorPosition = {
+        top: rect.bottom - hostRect.top,
+        left: rect.left - hostRect.left,
+      };
     }
   }
 

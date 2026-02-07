@@ -81,7 +81,23 @@ export class BlockManager extends LitElement {
     this.autoResizeTextarea(target);
   }
 
+  handleTextSelect(blockId: string, e: MouseEvent): void {
+    const target = e.target as HTMLTextAreaElement;
+    const text = target.value.substring(target.selectionStart, target.selectionEnd).trim();
+    const rect = target.getBoundingClientRect();
+    this.dispatchEvent(
+      new CustomEvent("text-select", {
+        detail: { text, rect, blockId },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
   handleBlockKeyDown(blockId: string, e: KeyboardEvent): void {
+    if (e.key === "Enter" && e.shiftKey) {
+      return;
+    }
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       this.addBlock();

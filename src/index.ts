@@ -1,4 +1,5 @@
 export { AdvancedTextEditor } from "./editor-component/advanced-text-editor/advanced-text-editor.js";
+export type { MentionProvider } from "./editor-component/advanced-text-editor/advanced-text-editor.js";
 export { BlockManager } from "./editor-component/block-manager/block-manager.js";
 export { CompletionMenu } from "./editor-component/completion-menu/completion-menu.js";
 export { CommandPalette } from "./editor-component/command-palette/command-palette.js";

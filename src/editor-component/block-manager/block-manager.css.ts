@@ -37,7 +37,7 @@ export const styles = css`
   }
 
   .drag-handle {
-    opacity: 0;
+    opacity: 0.4;
     cursor: grab;
     padding: 4px 2px;
     color: var(--editor-muted, #999999);

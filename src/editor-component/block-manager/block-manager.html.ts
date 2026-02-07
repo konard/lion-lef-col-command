@@ -44,6 +44,7 @@ function renderBlock(host: BlockManager, block: Block, index: number): TemplateR
         @keydown="${(e: KeyboardEvent) => host.handleBlockKeyDown(block.id, e)}"
         @focus="${() => host.handleBlockFocus(block.id)}"
         @blur="${() => host.handleBlockBlur(block.id)}"
+        @mouseup="${(e: MouseEvent) => host.handleTextSelect(block.id, e)}"
         @dragover="${(e: DragEvent) => host.dragController.handleDragOver(block.id, e)}"
         @drop="${() => host.dragController.handleDrop()}"
         aria-label="Block ${index + 1}"

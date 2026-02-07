@@ -2,9 +2,12 @@ import { css } from "lit";
 
 export const styles = css`
   :host {
-    position: fixed;
+    position: absolute;
     z-index: 1000;
     display: none;
+    position-anchor: --editor-anchor;
+    inset-area: block-start span-inline-end;
+    margin-bottom: 4px;
   }
 
   :host([active]) {

@@ -12,6 +12,7 @@ export const template = (host: AdvancedTextEditor): TemplateResult => html`
         @block-keydown="${host.handleBlockKeyDown}"
         @block-focus="${host.handleBlockFocus}"
         @block-blur="${host.handleBlockBlur}"
+        @text-select="${host.handleTextSelect}"
       ></block-manager>
     </div>
 
@@ -19,7 +20,7 @@ export const template = (host: AdvancedTextEditor): TemplateResult => html`
       <div class="editor-footer-left">
         <span class="footer-hint">
           Type / for commands${host.completionEnabled ? " | Tab for completions" : ""}
-          | @model for AI
+          | @mention for AI or users
         </span>
       </div>
       <div class="editor-footer-right">
@@ -31,7 +32,6 @@ export const template = (host: AdvancedTextEditor): TemplateResult => html`
                 class="ai-toggle-btn ${host.showAIPanel ? "active" : ""}"
                 @click="${host.toggleAIPanel}"
                 aria-label="Toggle AI panel"
-                popovertarget="ai-config-popover"
               >
                 AI
               </button>
@@ -53,28 +53,27 @@ export const template = (host: AdvancedTextEditor): TemplateResult => html`
     }
   </div>
 
+  <div
+    class="popover-anchor"
+    style="top:${host.anchorPosition.top}px;left:${host.anchorPosition.left}px"
+  ></div>
+
   <completion-menu
     .suggestions="${host.completionController.suggestions}"
     .selectedIndex="${host.completionController.selectedIndex}"
     ?active="${host.completionController.isActive}"
     @completion-select="${host.handleCompletionSelect}"
-    style="top:${host.completionPosition.top}px;left:${host.completionPosition.left}px"
-    popover="manual"
   ></completion-menu>
 
   <col-palette
     ?active="${host.commandPaletteActive}"
-    style="top:${host.commandPalettePosition.top}px;left:${host.commandPalettePosition.left}px"
     @palette-close="${host.handlePaletteClose}"
-    popover="manual"
   ></col-palette>
 
   <inline-menu
     ?active="${host.inlineToolsActive}"
     .selectedText="${host.selectedText}"
     .tools="${host.customInlineTools}"
-    style="top:${host.inlineToolsPosition.top}px;left:${host.inlineToolsPosition.left}px"
     @format-applied="${host.handleFormatApplied}"
-    popover="manual"
   ></inline-menu>
 `;
