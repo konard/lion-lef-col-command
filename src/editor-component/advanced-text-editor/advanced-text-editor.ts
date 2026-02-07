@@ -309,6 +309,16 @@ export class AdvancedTextEditor extends LitElement {
     }
   }
 
+  handleBlockSettings(_e: CustomEvent<{ blockId: string }>): void {
+    this.showAIPanel = true;
+    this.updateComplete.then(() => {
+      const aiPanel = this.shadowRoot?.querySelector("ai-integration") as any;
+      if (aiPanel) {
+        aiPanel.showConfig = true;
+      }
+    });
+  }
+
   toggleAIPanel(): void {
     this.showAIPanel = !this.showAIPanel;
   }

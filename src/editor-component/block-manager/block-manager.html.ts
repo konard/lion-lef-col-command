@@ -50,6 +50,14 @@ function renderBlock(host: BlockManager, block: Block, index: number): TemplateR
         aria-label="Block ${index + 1}"
         rows="1"
       ></textarea>
+      <button
+        class="block-settings-btn"
+        @click="${() => host.handleSettingsClick(block.id)}"
+        aria-label="Block settings"
+        title="API settings"
+      >
+        &#x2699;
+      </button>
     </div>
   `;
 }

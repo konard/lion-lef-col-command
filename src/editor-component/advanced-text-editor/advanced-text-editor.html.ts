@@ -13,6 +13,7 @@ export const template = (host: AdvancedTextEditor): TemplateResult => html`
         @block-focus="${host.handleBlockFocus}"
         @block-blur="${host.handleBlockBlur}"
         @text-select="${host.handleTextSelect}"
+        @block-settings="${host.handleBlockSettings}"
       ></block-manager>
     </div>
 

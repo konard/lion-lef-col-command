@@ -68,6 +68,7 @@ export class AIIntegration extends LitElement {
 
     if (result) {
       this.response = result.text;
+      this.insertResponse();
     }
   }
 

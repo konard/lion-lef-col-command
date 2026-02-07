@@ -151,6 +151,16 @@ export class BlockManager extends LitElement {
     );
   }
 
+  handleSettingsClick(blockId: string): void {
+    this.dispatchEvent(
+      new CustomEvent("block-settings", {
+        detail: { blockId },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
   getContent(): string {
     return this.blocks.map((b) => b.content).join("\n");
   }

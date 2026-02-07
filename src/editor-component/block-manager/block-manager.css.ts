@@ -98,6 +98,30 @@ export const styles = css`
     font-style: italic;
   }
 
+  .block-settings-btn {
+    opacity: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: var(--editor-muted, #999999);
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: opacity 0.15s;
+    border-radius: 4px;
+  }
+
+  .block-wrapper:hover .block-settings-btn {
+    opacity: 0.6;
+  }
+
+  .block-settings-btn:hover {
+    opacity: 1 !important;
+    color: var(--editor-accent, #1a73e8);
+    background: var(--editor-highlight, #e8f0fe);
+  }
+
   .block-divider {
     width: 100%;
     border: none;
