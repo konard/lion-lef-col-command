@@ -3,19 +3,33 @@ export function generateId(): string {
 }
 
 export function sanitizeHTML(html: string): string {
-  const div = document.createElement('div');
+  const div = document.createElement("div");
   div.textContent = html;
   return div.innerHTML;
 }
 
 const ALLOWED_TAGS = new Set([
-  'b', 'i', 'u', 's', 'em', 'strong', 'a', 'br', 'span', 'sub', 'sup',
-  'code', 'pre', 'mark', 'del', 'ins',
+  "b",
+  "i",
+  "u",
+  "s",
+  "em",
+  "strong",
+  "a",
+  "br",
+  "span",
+  "sub",
+  "sup",
+  "code",
+  "pre",
+  "mark",
+  "del",
+  "ins",
 ]);
 
 export function sanitizeRichHTML(html: string): string {
   return html.replace(/<\/?([a-zA-Z][a-zA-Z0-9]*)\b[^>]*>/gi, (tag, name) => {
-    return ALLOWED_TAGS.has(name.toLowerCase()) ? tag : '';
+    return ALLOWED_TAGS.has(name.toLowerCase()) ? tag : "";
   });
 }
 
@@ -45,7 +59,7 @@ export function throttle<T extends (...args: unknown[]) => void>(
 }
 
 export function getTextContent(element: HTMLElement): string {
-  return element.textContent ?? '';
+  return element.textContent ?? "";
 }
 
 export function setCaretPosition(element: HTMLElement, offset: number): void {
@@ -73,7 +87,7 @@ export function fuzzyMatch(query: string, text: string): { score: number; matche
   for (let i = 0; i < textLower.length && queryIdx < queryLower.length; i++) {
     if (textLower[i] === queryLower[queryIdx]) {
       matched.push(i);
-      score += i === 0 || textLower[i - 1] === ' ' || textLower[i - 1] === '-' ? 2 : 1;
+      score += i === 0 || textLower[i - 1] === " " || textLower[i - 1] === "-" ? 2 : 1;
       queryIdx++;
     }
   }

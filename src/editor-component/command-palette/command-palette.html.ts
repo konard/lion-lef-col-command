@@ -1,5 +1,5 @@
-import { html, TemplateResult, nothing } from 'lit';
-import type { CommandPalette } from './command-palette.js';
+import { html, TemplateResult, nothing } from "lit";
+import type { CommandPalette } from "./command-palette.js";
 
 export const template = (host: CommandPalette): TemplateResult => html`
   <div class="palette" role="dialog" aria-label="Command palette">
@@ -15,10 +15,13 @@ export const template = (host: CommandPalette): TemplateResult => html`
       />
     </div>
     <div class="palette-list" role="listbox">
-      ${host.filteredCommands.length === 0
-        ? html`<div class="palette-empty">No commands found</div>`
-        : host.filteredCommands.map(
-            (result, index) => html`
+      ${
+        host.filteredCommands.length === 0
+          ? html`
+              <div class="palette-empty">No commands found</div>
+            `
+          : host.filteredCommands.map(
+              (result, index) => html`
               <div
                 class="palette-item"
                 role="option"
@@ -26,21 +29,28 @@ export const template = (host: CommandPalette): TemplateResult => html`
                 @click="${() => host.executeCommand(index)}"
                 @mouseenter="${() => host.hoverItem(index)}"
               >
-                ${result.command.icon
-                  ? html`<span class="palette-item-icon">${result.command.icon}</span>`
-                  : nothing}
+                ${
+                  result.command.icon
+                    ? html`<span class="palette-item-icon">${result.command.icon}</span>`
+                    : nothing
+                }
                 <div class="palette-item-info">
                   <span class="palette-item-label">${result.command.label}</span>
-                  ${result.command.description
-                    ? html`<span class="palette-item-desc">${result.command.description}</span>`
-                    : nothing}
+                  ${
+                    result.command.description
+                      ? html`<span class="palette-item-desc">${result.command.description}</span>`
+                      : nothing
+                  }
                 </div>
-                ${result.command.shortcut
-                  ? html`<span class="palette-item-shortcut">${result.command.shortcut}</span>`
-                  : nothing}
+                ${
+                  result.command.shortcut
+                    ? html`<span class="palette-item-shortcut">${result.command.shortcut}</span>`
+                    : nothing
+                }
               </div>
             `,
-          )}
+            )
+      }
     </div>
   </div>
 `;

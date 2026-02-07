@@ -1,10 +1,10 @@
-import { LitElement } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-import { styles } from './completion-menu.css.js';
-import { template } from './completion-menu.html.js';
-import type { AICompletionSuggestion } from '../types/ai-types.js';
+import { LitElement } from "lit";
+import { customElement, property } from "lit/decorators.js";
+import { styles } from "./completion-menu.css.js";
+import { template } from "./completion-menu.html.js";
+import type { AICompletionSuggestion } from "../types/ai-types.js";
 
-@customElement('completion-menu')
+@customElement("completion-menu")
 export class CompletionMenu extends LitElement {
   static styles = styles;
 
@@ -24,7 +24,7 @@ export class CompletionMenu extends LitElement {
   selectItem(index: number): void {
     this.selectedIndex = index;
     this.dispatchEvent(
-      new CustomEvent('completion-select', {
+      new CustomEvent("completion-select", {
         detail: this.suggestions[index],
         bubbles: true,
         composed: true,
@@ -39,6 +39,6 @@ export class CompletionMenu extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'completion-menu': CompletionMenu;
+    "completion-menu": CompletionMenu;
   }
 }
