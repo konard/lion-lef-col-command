@@ -52,33 +52,38 @@ export const styles = css`
     cursor: grabbing;
   }
 
-  .block-content {
+  textarea.block-content {
     flex: 1;
-    min-height: 24px;
+    min-height: 28px;
     outline: none;
     padding: 4px 8px;
+    border: none;
     border-radius: 4px;
     line-height: 1.6;
-    word-wrap: break-word;
-    white-space: pre-wrap;
+    resize: none;
+    overflow: hidden;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    background: transparent;
+    box-sizing: border-box;
+    width: 100%;
   }
 
-  .block-content:focus {
+  textarea.block-content:focus {
     background: var(--editor-focus-bg, rgba(0, 0, 0, 0.02));
   }
 
-  .block-content:empty::before {
-    content: attr(data-placeholder);
+  textarea.block-content::placeholder {
     color: var(--editor-placeholder, #aaaaaa);
-    pointer-events: none;
   }
 
-  .block-content[data-type="heading"] {
+  textarea.block-content[data-type="heading"] {
     font-size: 1.5em;
     font-weight: 700;
   }
 
-  .block-content[data-type="code"] {
+  textarea.block-content[data-type="code"] {
     font-family: "SF Mono", "Fira Code", monospace;
     font-size: 13px;
     background: var(--editor-code-bg, #f5f5f5);
@@ -86,7 +91,7 @@ export const styles = css`
     border-radius: 6px;
   }
 
-  .block-content[data-type="quote"] {
+  textarea.block-content[data-type="quote"] {
     border-left: 3px solid var(--editor-accent, #1a73e8);
     padding-left: 16px;
     color: var(--editor-muted, #666666);
@@ -118,11 +123,11 @@ export const styles = css`
   }
 
   @media (prefers-color-scheme: dark) {
-    .block-content:focus {
+    textarea.block-content:focus {
       background: var(--editor-focus-bg, rgba(255, 255, 255, 0.03));
     }
 
-    .block-content[data-type="code"] {
+    textarea.block-content[data-type="code"] {
       background: var(--editor-code-bg, #1e1e2e);
     }
   }

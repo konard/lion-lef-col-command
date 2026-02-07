@@ -29,28 +29,26 @@ function renderBlock(host: BlockManager, block: Block, index: number): TemplateR
               @dragend="${() => host.dragController.handleDragEnd()}"
               aria-label="Drag to reorder"
             >
-              ⠿
+              &#x2807;
             </span>
           `
           : nothing
       }
-      <div
+      <textarea
         class="block-content"
-        contenteditable="true"
         data-type="${block.type}"
         data-block-id="${block.id}"
-        data-placeholder="${index === 0 ? host.placeholder : "Type something..."}"
+        placeholder="${index === 0 ? host.placeholder : "Type something..."}"
+        .value="${block.content}"
         @input="${(e: InputEvent) => host.handleBlockInput(block.id, e)}"
         @keydown="${(e: KeyboardEvent) => host.handleBlockKeyDown(block.id, e)}"
         @focus="${() => host.handleBlockFocus(block.id)}"
         @blur="${() => host.handleBlockBlur(block.id)}"
         @dragover="${(e: DragEvent) => host.dragController.handleDragOver(block.id, e)}"
         @drop="${() => host.dragController.handleDrop()}"
-        role="textbox"
         aria-label="Block ${index + 1}"
-        aria-multiline="true"
-        .innerHTML="${block.content}"
-      ></div>
+        rows="1"
+      ></textarea>
     </div>
   `;
 }

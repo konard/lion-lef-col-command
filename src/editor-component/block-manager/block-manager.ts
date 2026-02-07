@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import { styles } from "./block-manager.css.js";
 import { template } from "./block-manager.html.js";
 import type { Block, BlockType } from "../types/editor-types.js";
-import { generateId, sanitizeRichHTML } from "../utils/dom-helpers.js";
+import { generateId } from "../utils/dom-helpers.js";
 import { DragDropController } from "../controllers/drag-drop-controller.js";
 
 @customElement("block-manager")
@@ -37,8 +37,8 @@ export class BlockManager extends LitElement {
 
     this.updateComplete.then(() => {
       const el = this.shadowRoot?.querySelector(
-        `[data-block-id="${block.id}"].block-content`,
-      ) as HTMLElement;
+        `textarea[data-block-id="${block.id}"]`,
+      ) as HTMLTextAreaElement | null;
       el?.focus();
     });
 
@@ -76,8 +76,9 @@ export class BlockManager extends LitElement {
   }
 
   handleBlockInput(blockId: string, e: InputEvent): void {
-    const target = e.target as HTMLElement;
-    this.updateBlockContent(blockId, sanitizeRichHTML(target.innerHTML));
+    const target = e.target as HTMLTextAreaElement;
+    this.updateBlockContent(blockId, target.value);
+    this.autoResizeTextarea(target);
   }
 
   handleBlockKeyDown(blockId: string, e: KeyboardEvent): void {
@@ -87,8 +88,8 @@ export class BlockManager extends LitElement {
     }
 
     if (e.key === "Backspace") {
-      const target = e.target as HTMLElement;
-      if (target.textContent === "" && this.blocks.length > 1) {
+      const target = e.target as HTMLTextAreaElement;
+      if (target.value === "" && this.blocks.length > 1) {
         e.preventDefault();
         const idx = this.blocks.findIndex((b) => b.id === blockId);
         this.removeBlock(blockId);
@@ -96,8 +97,8 @@ export class BlockManager extends LitElement {
           this.updateComplete.then(() => {
             const prevBlock = this.blocks[idx - 1];
             const el = this.shadowRoot?.querySelector(
-              `[data-block-id="${prevBlock.id}"].block-content`,
-            ) as HTMLElement;
+              `textarea[data-block-id="${prevBlock.id}"]`,
+            ) as HTMLTextAreaElement | null;
             el?.focus();
           });
         }
@@ -150,6 +151,11 @@ export class BlockManager extends LitElement {
       }));
     }
     this.requestUpdate();
+  }
+
+  autoResizeTextarea(textarea: HTMLTextAreaElement): void {
+    textarea.style.height = "auto";
+    textarea.style.height = textarea.scrollHeight + "px";
   }
 
   private emitChange(blockId: string, type: "insert" | "update" | "delete" | "reorder"): void {

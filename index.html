@@ -98,12 +98,12 @@
         <p>Type "/" to access commands for headings, code blocks, quotes, and more</p>
       </div>
       <div class="feature-card">
-        <h3>Inline Tools</h3>
-        <p>Select text to format with bold, italic, links, and custom tools</p>
+        <h3>@Mention AI</h3>
+        <p>Type @model-name to trigger immediate AI queries (e.g. @gpt-5.2 your question)</p>
       </div>
       <div class="feature-card">
         <h3>AI Integration</h3>
-        <p>Configurable AI provider for text completion and transformation</p>
+        <p>Configurable AI provider with model settings accessible via popover panel</p>
       </div>
       <div class="feature-card">
         <h3>Dark Mode</h3>
@@ -113,11 +113,11 @@
 
     <div class="demo-section">
       <h2>Editor Demo</h2>
-      <p>Try the editor below. Type "/", select text for formatting tools, or use Shift+Enter to expand.</p>
+      <p>Try the editor below. Type "/" for commands, use Shift+Enter to expand, or type @model-name to trigger AI.</p>
 
       <advanced-text-editor
         id="demo-editor"
-        placeholder="Start typing here... Try typing '/' for commands"
+        placeholder="Start typing here... Try typing '/' for commands or @gpt-4 for AI"
         ai-enabled
         completion-enabled
         commands-enabled
@@ -149,13 +149,13 @@
 
     window.setContent = function () {
       const editor = document.getElementById('demo-editor');
-      editor.setContent('Welcome to Lit Editor!\nThis is a block-based editor built with Lit.\nTry typing "/" to see the command palette.\nSelect text to see inline formatting tools.');
+      editor.setContent('Welcome to Lit Editor!\nThis is a block-based editor built with Lit.\nTry typing "/" to see the command palette.\nType @gpt-4 followed by a question to trigger AI.');
     };
 
     window.enableMockAI = function () {
       const editor = document.getElementById('demo-editor');
       editor.setAIProvider(new MockAIProvider());
-      alert('Mock AI provider enabled. Click the AI button in the editor footer.');
+      alert('Mock AI provider enabled. Click the AI button in the editor footer or type @model-name in a block.');
     };
   </script>
 </body>

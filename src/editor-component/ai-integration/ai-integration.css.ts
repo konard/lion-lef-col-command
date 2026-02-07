@@ -20,6 +20,12 @@ export const styles = css`
     margin-bottom: 8px;
   }
 
+  .ai-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   .ai-title {
     font-size: 13px;
     font-weight: 600;
@@ -27,6 +33,62 @@ export const styles = css`
     display: flex;
     align-items: center;
     gap: 6px;
+  }
+
+  .ai-config-btn {
+    background: transparent;
+    border: 1px solid var(--editor-border, #e0e0e0);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--editor-accent, #1a73e8);
+    transition: all 0.15s;
+  }
+
+  .ai-config-btn:hover {
+    background: var(--editor-highlight, #e8f0fe);
+  }
+
+  .ai-config-panel {
+    margin-bottom: 8px;
+    padding: 8px;
+    border: 1px solid var(--editor-border, #e0e0e0);
+    border-radius: 6px;
+    background: var(--editor-bg, #ffffff);
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .config-field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .config-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--editor-muted, #999999);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .config-input {
+    padding: 4px 8px;
+    border: 1px solid var(--editor-border, #e0e0e0);
+    border-radius: 4px;
+    font-size: 12px;
+    background: var(--editor-input-bg, #ffffff);
+    color: var(--editor-text, #333333);
+    outline: none;
+  }
+
+  .config-input:focus {
+    border-color: var(--editor-accent, #1a73e8);
   }
 
   .ai-status {
@@ -131,6 +193,15 @@ export const styles = css`
     }
 
     .ai-input {
+      background: var(--editor-input-bg, #2d2d3d);
+      border-color: var(--editor-border, #444444);
+    }
+
+    .ai-config-panel {
+      background: var(--editor-bg, #1e1e2e);
+    }
+
+    .config-input {
       background: var(--editor-input-bg, #2d2d3d);
       border-color: var(--editor-border, #444444);
     }
