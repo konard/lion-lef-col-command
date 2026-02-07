@@ -9,7 +9,7 @@ import type {
 } from "../types/command-types.js";
 import { fuzzyMatch } from "../utils/dom-helpers.js";
 
-@customElement("command-palette")
+@customElement("col-palette")
 export class CommandPalette extends LitElement {
   static styles = styles;
 
@@ -139,6 +139,6 @@ export class CommandPalette extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "command-palette": CommandPalette;
+    "col-palette": CommandPalette;
   }
 }

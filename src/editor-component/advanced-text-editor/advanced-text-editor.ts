@@ -7,7 +7,6 @@ import type { AIProvider, AICompletionSuggestion } from "../types/ai-types.js";
 import type { CommandDefinition } from "../types/command-types.js";
 import type { InlineTool } from "../inline-tools/inline-tools.js";
 import { CompletionController } from "../controllers/completion-controller.js";
-import { getCaretCoordinates, calculatePopoverPosition } from "../utils/positioning.js";
 import { generateId } from "../utils/dom-helpers.js";
 
 import "../block-manager/block-manager.js";
@@ -15,6 +14,12 @@ import "../completion-menu/completion-menu.js";
 import "../command-palette/command-palette.js";
 import "../inline-tools/inline-tools.js";
 import "../ai-integration/ai-integration.js";
+
+export interface MentionMatch {
+  model: string;
+  query: string;
+  blockId: string;
+}
 
 @customElement("advanced-text-editor")
 export class AdvancedTextEditor extends LitElement {
@@ -68,6 +73,9 @@ export class AdvancedTextEditor extends LitElement {
   @state()
   inlineToolsPosition = { top: 0, left: 0 };
 
+  @state()
+  pendingMention: MentionMatch | null = null;
+
   customInlineTools: InlineTool[] = [];
 
   completionController = new CompletionController(this);
@@ -81,7 +89,6 @@ export class AdvancedTextEditor extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    document.addEventListener("selectionchange", this.handleSelectionChange);
     if (this.commandsEnabled) {
       this.registerDefaultCommands();
     }
@@ -89,7 +96,6 @@ export class AdvancedTextEditor extends LitElement {
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    document.removeEventListener("selectionchange", this.handleSelectionChange);
     if (this.selectionCheckTimer) clearTimeout(this.selectionCheckTimer);
   }
 
@@ -105,7 +111,7 @@ export class AdvancedTextEditor extends LitElement {
 
   registerCommand(command: CommandDefinition): void {
     this.updateComplete.then(() => {
-      const palette = this.shadowRoot?.querySelector("command-palette");
+      const palette = this.shadowRoot?.querySelector("col-palette");
       if (palette) {
         (palette as any).registerCommand(command);
       }
@@ -114,7 +120,7 @@ export class AdvancedTextEditor extends LitElement {
 
   registerCommands(commands: CommandDefinition[]): void {
     this.updateComplete.then(() => {
-      const palette = this.shadowRoot?.querySelector("command-palette");
+      const palette = this.shadowRoot?.querySelector("col-palette");
       if (palette) {
         (palette as any).registerCommands(commands);
       }
@@ -161,6 +167,11 @@ export class AdvancedTextEditor extends LitElement {
           this.completionController.dismiss();
         }
       }
+    }
+
+    const changedBlock = this.blocks.find((b) => b.id === e.detail.changedBlockId);
+    if (changedBlock) {
+      this.checkForMention(changedBlock);
     }
 
     this.dispatchEvent(
@@ -222,6 +233,22 @@ export class AdvancedTextEditor extends LitElement {
     }, 200);
   }
 
+  handleTextSelect(e: CustomEvent<{ text: string; rect: DOMRect }>): void {
+    if (!this.inlineToolsEnabled) return;
+    const { text, rect } = e.detail;
+    if (text.length > 0) {
+      this.selectedText = text;
+      this.inlineToolsPosition = {
+        top: rect.top - 44,
+        left: rect.left + rect.width / 2,
+      };
+      this.inlineToolsActive = true;
+    } else {
+      this.inlineToolsActive = false;
+      this.selectedText = "";
+    }
+  }
+
   handleCompletionSelect(e: CustomEvent<AICompletionSuggestion>): void {
     this.applyCompletion(e.detail);
   }
@@ -246,42 +273,44 @@ export class AdvancedTextEditor extends LitElement {
     this.showAIPanel = !this.showAIPanel;
   }
 
-  private handleSelectionChange = (): void => {
-    if (!this.inlineToolsEnabled) return;
-
-    if (this.selectionCheckTimer) clearTimeout(this.selectionCheckTimer);
-    this.selectionCheckTimer = setTimeout(() => {
-      const selection = window.getSelection();
-      const text = selection?.toString().trim() ?? "";
-
-      if (text.length > 0) {
-        this.selectedText = text;
-        const range = selection!.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-        const pos = calculatePopoverPosition(
-          { x: rect.left, y: rect.top, width: rect.width, height: rect.height },
-          40,
-          300,
+  private checkForMention(block: Block): void {
+    const mentionRegex = /@([\w.-]+)\s+(.*)/;
+    const match = block.content.match(mentionRegex);
+    if (match) {
+      const model = match[1];
+      const query = match[2].trim();
+      if (query.length > 0) {
+        this.pendingMention = { model, query, blockId: block.id };
+        this.showAIPanel = true;
+        this.dispatchEvent(
+          new CustomEvent("mention-trigger", {
+            detail: { model, query, blockId: block.id },
+            bubbles: true,
+            composed: true,
+          }),
         );
-        this.inlineToolsPosition = { top: pos.top, left: pos.left };
-        this.inlineToolsActive = true;
-      } else {
-        this.inlineToolsActive = false;
-        this.selectedText = "";
+
+        this.updateComplete.then(() => {
+          const aiPanel = this.shadowRoot?.querySelector("ai-integration") as any;
+          if (aiPanel) {
+            aiPanel.prompt = `[${model}] ${query}`;
+            aiPanel.sendPrompt();
+          }
+        });
       }
-    }, 300);
-  };
+    }
+  }
 
   private openCommandPalette(): void {
-    const caret = this.getActiveCaretRect();
-    if (caret) {
-      const pos = calculatePopoverPosition(caret, 300, 260);
-      this.commandPalettePosition = { top: pos.top, left: pos.left };
+    const blockEl = this.getFocusedTextarea();
+    if (blockEl) {
+      const rect = blockEl.getBoundingClientRect();
+      this.commandPalettePosition = { top: rect.bottom + 4, left: rect.left };
     }
     this.commandPaletteActive = true;
 
     this.updateComplete.then(() => {
-      const palette = this.shadowRoot?.querySelector("command-palette") as any;
+      const palette = this.shadowRoot?.querySelector("col-palette") as any;
       palette?.open({
         editor: this,
         blockId: this.focusedBlockId ?? undefined,
@@ -308,27 +337,24 @@ export class AdvancedTextEditor extends LitElement {
   }
 
   private updateCompletionPosition(): void {
-    const caret = this.getActiveCaretRect();
-    if (caret) {
-      const pos = calculatePopoverPosition(caret, 200, 180);
-      this.completionPosition = { top: pos.top, left: pos.left };
+    const blockEl = this.getFocusedTextarea();
+    if (blockEl) {
+      const rect = blockEl.getBoundingClientRect();
+      this.completionPosition = { top: rect.bottom + 4, left: rect.left };
     }
   }
 
-  private getActiveCaretRect(): { x: number; y: number; width: number; height: number } | null {
+  private getFocusedTextarea(): HTMLTextAreaElement | null {
     if (!this.focusedBlockId) return null;
-    const blockEl = this.shadowRoot
-      ?.querySelector(`block-manager`)
+    return this.shadowRoot
+      ?.querySelector("block-manager")
       ?.shadowRoot?.querySelector(
-        `[data-block-id="${this.focusedBlockId}"].block-content`,
-      ) as HTMLElement | null;
-    if (!blockEl) return null;
-    return getCaretCoordinates(blockEl);
+        `textarea[data-block-id="${this.focusedBlockId}"]`,
+      ) as HTMLTextAreaElement | null;
   }
 
   private getLastWord(text: string): string {
-    const stripped = text.replace(/<[^>]*>/g, "");
-    const match = stripped.match(/(\S+)$/);
+    const match = text.match(/(\S+)$/);
     return match ? match[1] : "";
   }
 
@@ -377,7 +403,7 @@ export class AdvancedTextEditor extends LitElement {
         id: "divider",
         label: "Divider",
         description: "Insert a horizontal divider",
-        icon: "—",
+        icon: "\u2014",
         category: "basic",
         execute: () => {
           const blockManager = this.shadowRoot?.querySelector("block-manager") as any;

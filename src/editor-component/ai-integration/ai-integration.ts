@@ -5,6 +5,12 @@ import { template } from "./ai-integration.html.js";
 import { AIController } from "../controllers/ai-controller.js";
 import type { AIProvider } from "../types/ai-types.js";
 
+export interface AIModelConfig {
+  model: string;
+  temperature: number;
+  maxTokens: number;
+}
+
 @customElement("ai-integration")
 export class AIIntegration extends LitElement {
   static styles = styles;
@@ -17,6 +23,16 @@ export class AIIntegration extends LitElement {
   @state()
   response = "";
 
+  @state()
+  showConfig = false;
+
+  @state()
+  modelConfig: AIModelConfig = {
+    model: "gpt-4",
+    temperature: 0.7,
+    maxTokens: 1024,
+  };
+
   @property({ type: String })
   context = "";
 
@@ -26,6 +42,14 @@ export class AIIntegration extends LitElement {
 
   setProvider(provider: AIProvider): void {
     this.aiController.setProvider(provider);
+  }
+
+  toggleConfig(): void {
+    this.showConfig = !this.showConfig;
+  }
+
+  updateModelConfig(field: keyof AIModelConfig, value: string | number): void {
+    this.modelConfig = { ...this.modelConfig, [field]: value };
   }
 
   async sendPrompt(): Promise<void> {

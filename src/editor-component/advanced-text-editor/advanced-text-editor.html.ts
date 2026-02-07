@@ -19,6 +19,7 @@ export const template = (host: AdvancedTextEditor): TemplateResult => html`
       <div class="editor-footer-left">
         <span class="footer-hint">
           Type / for commands${host.completionEnabled ? " | Tab for completions" : ""}
+          | @model for AI
         </span>
       </div>
       <div class="editor-footer-right">
@@ -30,6 +31,7 @@ export const template = (host: AdvancedTextEditor): TemplateResult => html`
                 class="ai-toggle-btn ${host.showAIPanel ? "active" : ""}"
                 @click="${host.toggleAIPanel}"
                 aria-label="Toggle AI panel"
+                popovertarget="ai-config-popover"
               >
                 AI
               </button>
@@ -57,19 +59,22 @@ export const template = (host: AdvancedTextEditor): TemplateResult => html`
     ?active="${host.completionController.isActive}"
     @completion-select="${host.handleCompletionSelect}"
     style="top:${host.completionPosition.top}px;left:${host.completionPosition.left}px"
+    popover="manual"
   ></completion-menu>
 
-  <command-palette
+  <col-palette
     ?active="${host.commandPaletteActive}"
     style="top:${host.commandPalettePosition.top}px;left:${host.commandPalettePosition.left}px"
     @palette-close="${host.handlePaletteClose}"
-  ></command-palette>
+    popover="manual"
+  ></col-palette>
 
-  <inline-tools
+  <inline-menu
     ?active="${host.inlineToolsActive}"
     .selectedText="${host.selectedText}"
     .tools="${host.customInlineTools}"
     style="top:${host.inlineToolsPosition.top}px;left:${host.inlineToolsPosition.left}px"
     @format-applied="${host.handleFormatApplied}"
-  ></inline-tools>
+    popover="manual"
+  ></inline-menu>
 `;

@@ -10,7 +10,7 @@ export interface InlineTool {
   action: (selectedText: string) => void | Promise<void>;
 }
 
-@customElement("inline-tools")
+@customElement("inline-menu")
 export class InlineTools extends LitElement {
   static styles = styles;
 
@@ -71,6 +71,6 @@ export class InlineTools extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "inline-tools": InlineTools;
+    "inline-menu": InlineTools;
   }
 }
