@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lit Editor - Advanced Text Editor Component</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    @media (prefers-color-scheme: dark) {
+      body { background: #1a1a2e; color: #e0e0e0; }
+    }
+    header {
+      padding: 24px 32px;
+      border-bottom: 1px solid #e0e0e0;
+      background: #ffffff;
+    }
+    @media (prefers-color-scheme: dark) {
+      header { background: #252530; border-color: #444; }
+    }
+    header h1 { font-size: 24px; margin-bottom: 4px; }
+    header p { font-size: 14px; color: #888; }
+    main { max-width: 800px; width: 100%; margin: 32px auto; padding: 0 16px; }
+    .demo-section { margin-bottom: 32px; }
+    .demo-section h2 { font-size: 18px; margin-bottom: 12px; }
+    .demo-section p { font-size: 14px; color: #888; margin-bottom: 12px; }
+    .feature-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .feature-card {
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 16px;
+    }
+    @media (prefers-color-scheme: dark) {
+      .feature-card { background: #252530; border-color: #444; }
+    }
+    .feature-card h3 { font-size: 14px; margin-bottom: 4px; }
+    .feature-card p { font-size: 12px; margin: 0; }
+    .output-panel {
+      margin-top: 16px;
+      padding: 12px;
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    @media (prefers-color-scheme: dark) {
+      .output-panel { background: #252530; border-color: #444; }
+    }
+    .output-panel pre { white-space: pre-wrap; word-break: break-all; }
+    .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+    .btn {
+      padding: 6px 14px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      background: #ffffff;
+      cursor: pointer;
+      font-size: 13px;
+      color: #333;
+    }
+    .btn:hover { background: #f0f0f0; }
+    @media (prefers-color-scheme: dark) {
+      .btn { background: #333; color: #e0e0e0; border-color: #555; }
+      .btn:hover { background: #444; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Lit Editor</h1>
+    <p>A sophisticated text editor web component built with the Lit framework</p>
+  </header>
+
+  <main>
+    <div class="feature-list">
+      <div class="feature-card">
+        <h3>Block Editing</h3>
+        <p>Rich block-based content editing with drag and drop reordering</p>
+      </div>
+      <div class="feature-card">
+        <h3>Word Completion</h3>
+        <p>Contextual word suggestions with fuzzy matching, learning from your typing</p>
+      </div>
+      <div class="feature-card">
+        <h3>/ Commands</h3>
+        <p>Type "/" to access commands for headings, code blocks, quotes, and more</p>
+      </div>
+      <div class="feature-card">
+        <h3>Inline Tools</h3>
+        <p>Select text to format with bold, italic, links, and custom tools</p>
+      </div>
+      <div class="feature-card">
+        <h3>AI Integration</h3>
+        <p>Configurable AI provider for text completion and transformation</p>
+      </div>
+      <div class="feature-card">
+        <h3>Dark Mode</h3>
+        <p>Automatic dark mode support via CSS custom properties</p>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Editor Demo</h2>
+      <p>Try the editor below. Type "/", select text for formatting tools, or use Shift+Enter to expand.</p>
+
+      <advanced-text-editor
+        id="demo-editor"
+        placeholder="Start typing here... Try typing '/' for commands"
+        ai-enabled
+        completion-enabled
+        commands-enabled
+        inline-tools-enabled
+        block-reorder-enabled
+      ></advanced-text-editor>
+
+      <div class="btn-row">
+        <button class="btn" onclick="getContent()">Get Content</button>
+        <button class="btn" onclick="setContent()">Set Sample Content</button>
+        <button class="btn" onclick="enableMockAI()">Enable Mock AI</button>
+      </div>
+
+      <div class="output-panel" id="output">
+        <pre>Click "Get Content" to see the editor content here.</pre>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import './src/index.ts';
+    import { MockAIProvider } from './src/editor-component/utils/ai-provider.ts';
+
+    window.getContent = function () {
+      const editor = document.getElementById('demo-editor');
+      const content = editor.getContent();
+      document.getElementById('output').innerHTML = '<pre>' + (content || '(empty)') + '</pre>';
+    };
+
+    window.setContent = function () {
+      const editor = document.getElementById('demo-editor');
+      editor.setContent('Welcome to Lit Editor!\nThis is a block-based editor built with Lit.\nTry typing "/" to see the command palette.\nSelect text to see inline formatting tools.');
+    };
+
+    window.enableMockAI = function () {
+      const editor = document.getElementById('demo-editor');
+      editor.setAIProvider(new MockAIProvider());
+      alert('Mock AI provider enabled. Click the AI button in the editor footer.');
+    };
+  </script>
+</body>
+</html>
