@@ -5,8 +5,4 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true,
   },
-  test: {
-    environment: 'jsdom',
-    include: ['tests/**/*.test.ts'],
-  },
 });

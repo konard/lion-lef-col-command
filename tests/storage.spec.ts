@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'bun:test';
 import { saveToStorage, loadFromStorage, removeFromStorage } from '../src/editor-component/utils/storage.js';
 
 describe('storage', () => {
@@ -8,7 +8,7 @@ describe('storage', () => {
 
   it('should save and load values', () => {
     saveToStorage('test-key', { a: 1, b: 'hello' });
-    const result = loadFromStorage('test-key', null);
+    const result = loadFromStorage<{ a: number; b: string } | null>('test-key', null);
     expect(result).toEqual({ a: 1, b: 'hello' });
   });
 

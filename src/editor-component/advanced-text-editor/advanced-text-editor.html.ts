@@ -1,9 +1,9 @@
-import { html, TemplateResult, nothing } from 'lit';
-import type { AdvancedTextEditor } from './advanced-text-editor.js';
+import { html, TemplateResult, nothing } from "lit";
+import type { AdvancedTextEditor } from "./advanced-text-editor.js";
 
 export const template = (host: AdvancedTextEditor): TemplateResult => html`
   <div class="editor-root">
-    <div class="editor-body ${host.expanded ? 'expanded' : ''}">
+    <div class="editor-body ${host.expanded ? "expanded" : ""}">
       <block-manager
         .blocks="${host.blocks}"
         .placeholder="${host.placeholder}"
@@ -18,33 +18,37 @@ export const template = (host: AdvancedTextEditor): TemplateResult => html`
     <div class="editor-footer">
       <div class="editor-footer-left">
         <span class="footer-hint">
-          Type / for commands${host.completionEnabled ? ' | Tab for completions' : ''}
+          Type / for commands${host.completionEnabled ? " | Tab for completions" : ""}
         </span>
       </div>
       <div class="editor-footer-right">
         <span class="footer-hint">Shift+Enter to expand</span>
-        ${host.aiEnabled
-          ? html`
+        ${
+          host.aiEnabled
+            ? html`
               <button
-                class="ai-toggle-btn ${host.showAIPanel ? 'active' : ''}"
+                class="ai-toggle-btn ${host.showAIPanel ? "active" : ""}"
                 @click="${host.toggleAIPanel}"
                 aria-label="Toggle AI panel"
               >
                 AI
               </button>
             `
-          : nothing}
+            : nothing
+        }
       </div>
     </div>
 
-    ${host.showAIPanel && host.aiEnabled
-      ? html`
+    ${
+      host.showAIPanel && host.aiEnabled
+        ? html`
           <ai-integration
             .context="${host.getContent()}"
             @ai-insert="${host.handleAIInsert}"
           ></ai-integration>
         `
-      : nothing}
+        : nothing
+    }
   </div>
 
   <completion-menu

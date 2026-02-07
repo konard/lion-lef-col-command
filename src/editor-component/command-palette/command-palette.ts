@@ -1,15 +1,15 @@
-import { LitElement } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
-import { styles } from './command-palette.css.js';
-import { template } from './command-palette.html.js';
+import { LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
+import { styles } from "./command-palette.css.js";
+import { template } from "./command-palette.html.js";
 import type {
   CommandDefinition,
   CommandContext,
   CommandSearchResult,
-} from '../types/command-types.js';
-import { fuzzyMatch } from '../utils/dom-helpers.js';
+} from "../types/command-types.js";
+import { fuzzyMatch } from "../utils/dom-helpers.js";
 
-@customElement('command-palette')
+@customElement("command-palette")
 export class CommandPalette extends LitElement {
   static styles = styles;
 
@@ -17,7 +17,7 @@ export class CommandPalette extends LitElement {
   active = false;
 
   @state()
-  searchQuery = '';
+  searchQuery = "";
 
   @state()
   selectedIndex = 0;
@@ -53,24 +53,22 @@ export class CommandPalette extends LitElement {
 
   open(context: CommandContext): void {
     this.context = context;
-    this.searchQuery = '';
+    this.searchQuery = "";
     this.selectedIndex = 0;
     this.filterCommands();
     this.active = true;
     this.requestUpdate();
     this.updateComplete.then(() => {
-      const input = this.shadowRoot?.querySelector('input');
+      const input = this.shadowRoot?.querySelector("input");
       input?.focus();
     });
   }
 
   close(): void {
     this.active = false;
-    this.searchQuery = '';
+    this.searchQuery = "";
     this.filteredCommands = [];
-    this.dispatchEvent(
-      new CustomEvent('palette-close', { bubbles: true, composed: true }),
-    );
+    this.dispatchEvent(new CustomEvent("palette-close", { bubbles: true, composed: true }));
   }
 
   handleSearchInput(e: InputEvent): void {
@@ -81,21 +79,21 @@ export class CommandPalette extends LitElement {
 
   handleKeyDown(e: KeyboardEvent): void {
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
         this.selectedIndex = (this.selectedIndex + 1) % Math.max(this.filteredCommands.length, 1);
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
         this.selectedIndex =
           (this.selectedIndex - 1 + this.filteredCommands.length) %
           Math.max(this.filteredCommands.length, 1);
         break;
-      case 'Enter':
+      case "Enter":
         e.preventDefault();
         this.executeCommand(this.selectedIndex);
         break;
-      case 'Escape':
+      case "Escape":
         e.preventDefault();
         this.close();
         break;
@@ -141,6 +139,6 @@ export class CommandPalette extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'command-palette': CommandPalette;
+    "command-palette": CommandPalette;
   }
 }

@@ -29,12 +29,12 @@ export interface AIStreamChunk {
   done: boolean;
 }
 
-export type AIProviderStatus = 'idle' | 'loading' | 'streaming' | 'error' | 'ready';
+export type AIProviderStatus = "idle" | "loading" | "streaming" | "error" | "ready";
 
 export interface AICompletionSuggestion {
   text: string;
   score: number;
-  source: 'local' | 'ai';
+  source: "local" | "ai";
 }
 
 export interface AITransformAction {

@@ -1,4 +1,4 @@
-import { css } from 'lit';
+import { css } from "lit";
 
 export const styles = css`
   :host {
@@ -79,7 +79,7 @@ export const styles = css`
   }
 
   .block-content[data-type="code"] {
-    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-family: "SF Mono", "Fira Code", monospace;
     font-size: 13px;
     background: var(--editor-code-bg, #f5f5f5);
     padding: 8px 12px;
