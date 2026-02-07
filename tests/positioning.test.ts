@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { calculatePopoverPosition } from '../editor-component/utils/positioning.js';
+import { calculatePopoverPosition } from '../src/editor-component/utils/positioning.js';
 
 describe('calculatePopoverPosition', () => {
   afterEach(() => {

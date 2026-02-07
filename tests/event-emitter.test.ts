@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { EventEmitter } from '../editor-component/utils/event-emitter.js';
+import { EventEmitter } from '../src/editor-component/utils/event-emitter.js';
 
 describe('EventEmitter', () => {
   it('should call handler when event is emitted', () => {

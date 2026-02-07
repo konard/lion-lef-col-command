@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { generateId, sanitizeHTML, debounce, throttle, fuzzyMatch } from '../editor-component/utils/dom-helpers.js';
+import { generateId, sanitizeHTML, sanitizeRichHTML, debounce, throttle, fuzzyMatch } from '../src/editor-component/utils/dom-helpers.js';
 
 describe('generateId', () => {
   it('should return a string starting with "block-"', () => {
@@ -26,6 +26,32 @@ describe('sanitizeHTML', () => {
 
   it('should escape ampersands', () => {
     expect(sanitizeHTML('a & b')).toBe('a &amp; b');
+  });
+});
+
+describe('sanitizeRichHTML', () => {
+  it('should strip script tags', () => {
+    expect(sanitizeRichHTML('<script>alert("xss")</script>')).toBe('alert("xss")');
+  });
+
+  it('should keep allowed formatting tags', () => {
+    expect(sanitizeRichHTML('<b>bold</b> <i>italic</i> <u>underline</u>')).toBe(
+      '<b>bold</b> <i>italic</i> <u>underline</u>',
+    );
+  });
+
+  it('should strip iframe tags', () => {
+    expect(sanitizeRichHTML('<iframe src="evil.com"></iframe>')).toBe('');
+  });
+
+  it('should keep anchor tags', () => {
+    expect(sanitizeRichHTML('<a href="https://example.com">link</a>')).toBe(
+      '<a href="https://example.com">link</a>',
+    );
+  });
+
+  it('should strip div and form tags', () => {
+    expect(sanitizeRichHTML('<div>text</div><form>input</form>')).toBe('textinput');
   });
 });
 

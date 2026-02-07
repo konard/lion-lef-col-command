@@ -8,6 +8,17 @@ export function sanitizeHTML(html: string): string {
   return div.innerHTML;
 }
 
+const ALLOWED_TAGS = new Set([
+  'b', 'i', 'u', 's', 'em', 'strong', 'a', 'br', 'span', 'sub', 'sup',
+  'code', 'pre', 'mark', 'del', 'ins',
+]);
+
+export function sanitizeRichHTML(html: string): string {
+  return html.replace(/<\/?([a-zA-Z][a-zA-Z0-9]*)\b[^>]*>/gi, (tag, name) => {
+    return ALLOWED_TAGS.has(name.toLowerCase()) ? tag : '';
+  });
+}
+
 export function debounce<T extends (...args: unknown[]) => void>(
   fn: T,
   ms: number,

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { saveToStorage, loadFromStorage, removeFromStorage } from '../editor-component/utils/storage.js';
+import { saveToStorage, loadFromStorage, removeFromStorage } from '../src/editor-component/utils/storage.js';
 
 describe('storage', () => {
   beforeEach(() => {

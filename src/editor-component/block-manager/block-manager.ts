@@ -3,7 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { styles } from './block-manager.css.js';
 import { template } from './block-manager.html.js';
 import type { Block, BlockType } from '../types/editor-types.js';
-import { generateId } from '../utils/dom-helpers.js';
+import { generateId, sanitizeRichHTML } from '../utils/dom-helpers.js';
 import { DragDropController } from '../controllers/drag-drop-controller.js';
 
 @customElement('block-manager')
@@ -83,7 +83,7 @@ export class BlockManager extends LitElement {
 
   handleBlockInput(blockId: string, e: InputEvent): void {
     const target = e.target as HTMLElement;
-    this.updateBlockContent(blockId, target.innerHTML);
+    this.updateBlockContent(blockId, sanitizeRichHTML(target.innerHTML));
   }
 
   handleBlockKeyDown(blockId: string, e: KeyboardEvent): void {

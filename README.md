@@ -16,9 +16,11 @@ A sophisticated text editor web component built with the [Lit](https://lit.dev) 
 
 ## Setup
 
+Requires [Bun](https://bun.sh) runtime.
+
 ```bash
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
 Open `http://localhost:5173` to see the demo.
@@ -26,15 +28,18 @@ Open `http://localhost:5173` to see the demo.
 ## Build
 
 ```bash
-npm run build    # TypeScript check + Vite production build
-npm run preview  # Preview production build locally
+bun run build    # TypeScript check + Vite production build
+bun run preview  # Preview production build locally
 ```
 
 ## Test
 
+Tests are located in the `tests/` directory.
+
 ```bash
-npm test         # Run unit tests
-npm run test:watch  # Run in watch mode
+bun run test         # Run unit tests
+bun run test:watch   # Run in watch mode
+bun run typecheck    # TypeScript type checking only
 ```
 
 ## Architecture
@@ -50,6 +55,8 @@ src/editor-component/
 ├── controllers/            Reactive controllers (AI, completion, drag-drop)
 ├── types/                  TypeScript interfaces
 └── utils/                  Shared utilities
+
+tests/                      Unit tests (Vitest + jsdom)
 ```
 
 Each component follows the three-file pattern:
@@ -132,7 +139,7 @@ GitHub Pages deployment is automated via `.github/workflows/deploy.yml`. Push to
 Manual deployment:
 
 ```bash
-npm run build
+bun run build
 # Upload contents of dist/ to your hosting provider
 ```
 
@@ -141,8 +148,8 @@ npm run build
 1. Fork the repository
 2. Create a feature branch
 3. Follow the three-file component pattern (`.ts`, `.css.ts`, `.html.ts`)
-4. Write tests for new functionality
-5. Run `npm test` and `npm run build` before submitting a PR
+4. Write tests for new functionality in the `tests/` directory
+5. Run `bun run test` and `bun run build` before submitting a PR
 
 ## Known Limitations
 

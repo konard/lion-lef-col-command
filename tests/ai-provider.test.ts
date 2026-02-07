@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { MockAIProvider } from '../editor-component/utils/ai-provider.js';
+import { MockAIProvider } from '../src/editor-component/utils/ai-provider.js';
 
 describe('MockAIProvider', () => {
   it('should always be available', () => {
