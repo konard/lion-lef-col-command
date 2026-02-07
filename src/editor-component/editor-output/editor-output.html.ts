@@ -11,7 +11,9 @@ function renderOutputBlock(block: Block): TemplateResult {
     case "quote":
       return html`<blockquote class="output-quote">${block.content}</blockquote>`;
     case "divider":
-      return html`<hr class="output-divider" />`;
+      return html`
+        <hr class="output-divider" />
+      `;
     default:
       return html`<p class="output-paragraph">${block.content}</p>`;
   }
@@ -22,7 +24,9 @@ export const template = (host: EditorOutput): TemplateResult => html`
     ${
       host.blocks.length > 0
         ? host.blocks.map((block) => renderOutputBlock(block))
-        : html`<p class="output-empty">No content</p>`
+        : html`
+            <p class="output-empty">No content</p>
+          `
     }
   </div>
 `;
