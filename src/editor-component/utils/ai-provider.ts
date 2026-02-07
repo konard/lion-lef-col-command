@@ -1,4 +1,10 @@
-import type { AIProvider, AIProviderConfig, AIRequest, AIResponse, AIStreamChunk } from '../types/ai-types.js';
+import type {
+  AIProvider,
+  AIProviderConfig,
+  AIRequest,
+  AIResponse,
+  AIStreamChunk,
+} from "../types/ai-types.js";
 
 export class FetchAIProvider implements AIProvider {
   name: string;
@@ -19,21 +25,17 @@ export class FetchAIProvider implements AIProvider {
     }
 
     const response = await fetch(`${this.config.baseUrl}/chat/completions`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${this.config.apiKey}`,
       },
       body: JSON.stringify({
-        model: this.config.model ?? 'gpt-3.5-turbo',
+        model: this.config.model ?? "gpt-3.5-turbo",
         messages: [
-          ...(request.systemPrompt
-            ? [{ role: 'system', content: request.systemPrompt }]
-            : []),
-          ...(request.context
-            ? [{ role: 'user', content: request.context }]
-            : []),
-          { role: 'user', content: request.prompt },
+          ...(request.systemPrompt ? [{ role: "system", content: request.systemPrompt }] : []),
+          ...(request.context ? [{ role: "user", content: request.context }] : []),
+          { role: "user", content: request.prompt },
         ],
         max_tokens: this.config.maxTokens ?? 1024,
         temperature: this.config.temperature ?? 0.7,
@@ -47,7 +49,7 @@ export class FetchAIProvider implements AIProvider {
 
     const data = await response.json();
     return {
-      text: data.choices?.[0]?.message?.content ?? '',
+      text: data.choices?.[0]?.message?.content ?? "",
       usage: data.usage
         ? {
             promptTokens: data.usage.prompt_tokens,
@@ -65,18 +67,16 @@ export class FetchAIProvider implements AIProvider {
     }
 
     const response = await fetch(`${this.config.baseUrl}/chat/completions`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${this.config.apiKey}`,
       },
       body: JSON.stringify({
-        model: this.config.model ?? 'gpt-3.5-turbo',
+        model: this.config.model ?? "gpt-3.5-turbo",
         messages: [
-          ...(request.systemPrompt
-            ? [{ role: 'system', content: request.systemPrompt }]
-            : []),
-          { role: 'user', content: request.prompt },
+          ...(request.systemPrompt ? [{ role: "system", content: request.systemPrompt }] : []),
+          { role: "user", content: request.prompt },
         ],
         max_tokens: this.config.maxTokens ?? 1024,
         temperature: this.config.temperature ?? 0.7,
@@ -90,33 +90,33 @@ export class FetchAIProvider implements AIProvider {
 
     const reader = response.body?.getReader();
     if (!reader) {
-      throw new Error('No response body');
+      throw new Error("No response body");
     }
 
     const decoder = new TextDecoder();
-    let buffer = '';
+    let buffer = "";
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) {
-        yield { text: '', done: true };
+        yield { text: "", done: true };
         break;
       }
 
       buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop() ?? '';
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
 
       for (const line of lines) {
-        if (line.startsWith('data: ')) {
+        if (line.startsWith("data: ")) {
           const data = line.slice(6).trim();
-          if (data === '[DONE]') {
-            yield { text: '', done: true };
+          if (data === "[DONE]") {
+            yield { text: "", done: true };
             return;
           }
           try {
             const parsed = JSON.parse(data);
-            const text = parsed.choices?.[0]?.delta?.content ?? '';
+            const text = parsed.choices?.[0]?.delta?.content ?? "";
             if (text) {
               yield { text, done: false };
             }
@@ -130,7 +130,7 @@ export class FetchAIProvider implements AIProvider {
 }
 
 export class MockAIProvider implements AIProvider {
-  name = 'mock';
+  name = "mock";
 
   isAvailable(): boolean {
     return true;
@@ -140,16 +140,16 @@ export class MockAIProvider implements AIProvider {
     await new Promise((r) => setTimeout(r, 500));
     return {
       text: `AI response to: "${request.prompt.substring(0, 50)}..."`,
-      model: 'mock',
+      model: "mock",
     };
   }
 
   async *stream(request: AIRequest): AsyncGenerator<AIStreamChunk> {
-    const words = `AI response to: "${request.prompt.substring(0, 30)}..."`.split(' ');
+    const words = `AI response to: "${request.prompt.substring(0, 30)}..."`.split(" ");
     for (const word of words) {
       await new Promise((r) => setTimeout(r, 100));
-      yield { text: word + ' ', done: false };
+      yield { text: word + " ", done: false };
     }
-    yield { text: '', done: true };
+    yield { text: "", done: true };
   }
 }

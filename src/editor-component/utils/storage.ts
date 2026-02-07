@@ -1,4 +1,4 @@
-const STORAGE_PREFIX = 'lit-editor:';
+const STORAGE_PREFIX = "lit-editor:";
 
 export function saveToStorage<T>(key: string, value: T): void {
   try {

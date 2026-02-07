@@ -16,14 +16,14 @@ export interface Block {
 }
 
 export type BlockType =
-  | 'paragraph'
-  | 'heading'
-  | 'code'
-  | 'list'
-  | 'quote'
-  | 'image'
-  | 'divider'
-  | 'custom';
+  | "paragraph"
+  | "heading"
+  | "code"
+  | "list"
+  | "quote"
+  | "image"
+  | "divider"
+  | "custom";
 
 export interface CursorPosition {
   blockId: string;
@@ -56,7 +56,7 @@ export interface EditorConfig {
 export interface EditorChangeEvent {
   blocks: Block[];
   changedBlockId: string;
-  type: 'insert' | 'update' | 'delete' | 'reorder';
+  type: "insert" | "update" | "delete" | "reorder";
 }
 
 export interface EditorSelectionEvent {

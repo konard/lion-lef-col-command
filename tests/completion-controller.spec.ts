@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'bun:test';
 import { CompletionController } from '../src/editor-component/controllers/completion-controller.js';
 import type { ReactiveControllerHost } from 'lit';
 
@@ -20,6 +20,10 @@ describe('CompletionController', () => {
     host = createMockHost();
     controller = new CompletionController(host);
     controller.hostConnected();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('should register itself with the host', () => {
@@ -44,7 +48,6 @@ describe('CompletionController', () => {
     expect(controller.isActive).toBe(true);
     expect(controller.suggestions.length).toBeGreaterThan(0);
     expect(controller.suggestions.some((s) => s.text === 'javascript')).toBe(true);
-    vi.useRealTimers();
   });
 
   it('should dismiss on short queries', () => {
@@ -61,7 +64,6 @@ describe('CompletionController', () => {
 
     expect(controller.isActive).toBe(true);
     expect(controller.suggestions.some((s) => s.text === 'programming')).toBe(true);
-    vi.useRealTimers();
   });
 
   it('should not learn words shorter than 2 characters', () => {
@@ -70,7 +72,6 @@ describe('CompletionController', () => {
     controller.requestSuggestions('a');
     vi.advanceTimersByTime(400);
     expect(controller.isActive).toBe(false);
-    vi.useRealTimers();
   });
 
   it('should navigate suggestions with selectNext/selectPrevious', () => {
@@ -87,7 +88,6 @@ describe('CompletionController', () => {
     expect(controller.selectedIndex).toBe(1);
     controller.selectPrevious();
     expect(controller.selectedIndex).toBe(0);
-    vi.useRealTimers();
   });
 
   it('should wrap around when navigating past end', () => {
@@ -103,7 +103,6 @@ describe('CompletionController', () => {
       controller.selectNext();
     }
     expect(controller.selectedIndex).toBe(0);
-    vi.useRealTimers();
   });
 
   it('should get selected suggestion', () => {
@@ -116,7 +115,6 @@ describe('CompletionController', () => {
     const selected = controller.getSelected();
     expect(selected).not.toBeNull();
     expect(selected?.text).toBe('hello');
-    vi.useRealTimers();
   });
 
   it('should return null when no suggestions active', () => {
@@ -133,7 +131,6 @@ describe('CompletionController', () => {
     expect(controller.isActive).toBe(false);
     expect(controller.suggestions).toEqual([]);
     expect(controller.selectedIndex).toBe(0);
-    vi.useRealTimers();
   });
 
   it('should persist learned words to localStorage', () => {
@@ -148,6 +145,5 @@ describe('CompletionController', () => {
     vi.advanceTimersByTime(400);
 
     expect(controller2.suggestions.some((s) => s.text === 'persist')).toBe(true);
-    vi.useRealTimers();
   });
 });

@@ -1,7 +1,7 @@
-import { LitElement } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-import { styles } from './inline-tools.css.js';
-import { template } from './inline-tools.html.js';
+import { LitElement } from "lit";
+import { customElement, property } from "lit/decorators.js";
+import { styles } from "./inline-tools.css.js";
+import { template } from "./inline-tools.html.js";
 
 export interface InlineTool {
   id: string;
@@ -10,7 +10,7 @@ export interface InlineTool {
   action: (selectedText: string) => void | Promise<void>;
 }
 
-@customElement('inline-tools')
+@customElement("inline-tools")
 export class InlineTools extends LitElement {
   static styles = styles;
 
@@ -21,15 +21,15 @@ export class InlineTools extends LitElement {
   tools: InlineTool[] = [];
 
   @property({ type: String })
-  selectedText = '';
+  selectedText = "";
 
   render() {
     return template(this);
   }
 
   execFormat(command: string): void {
-    if (command === 'createLink') {
-      const url = prompt('Enter URL:');
+    if (command === "createLink") {
+      const url = prompt("Enter URL:");
       if (url) {
         document.execCommand(command, false, url);
       }
@@ -37,7 +37,7 @@ export class InlineTools extends LitElement {
       document.execCommand(command, false);
     }
     this.dispatchEvent(
-      new CustomEvent('format-applied', {
+      new CustomEvent("format-applied", {
         detail: { command },
         bubbles: true,
         composed: true,
@@ -48,7 +48,7 @@ export class InlineTools extends LitElement {
   handleCopy(): void {
     if (this.selectedText) {
       navigator.clipboard.writeText(this.selectedText).catch(() => {
-        document.execCommand('copy');
+        document.execCommand("copy");
       });
     }
   }
@@ -71,6 +71,6 @@ export class InlineTools extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'inline-tools': InlineTools;
+    "inline-tools": InlineTools;
   }
 }

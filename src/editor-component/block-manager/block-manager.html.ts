@@ -1,24 +1,27 @@
-import { html, TemplateResult, nothing } from 'lit';
-import type { BlockManager } from './block-manager.js';
-import type { Block } from '../types/editor-types.js';
+import { html, TemplateResult, nothing } from "lit";
+import type { BlockManager } from "./block-manager.js";
+import type { Block } from "../types/editor-types.js";
 
 function renderBlock(host: BlockManager, block: Block, index: number): TemplateResult {
   const dragState = host.dragController.state;
   const isDragging = dragState.draggedId === block.id;
-  const isOverAbove = dragState.overId === block.id && dragState.position === 'above';
-  const isOverBelow = dragState.overId === block.id && dragState.position === 'below';
+  const isOverAbove = dragState.overId === block.id && dragState.position === "above";
+  const isOverBelow = dragState.overId === block.id && dragState.position === "below";
 
-  if (block.type === 'divider') {
-    return html`<hr class="block-divider" />`;
+  if (block.type === "divider") {
+    return html`
+      <hr class="block-divider" />
+    `;
   }
 
   return html`
     <div
-      class="block-wrapper ${isDragging ? 'dragging' : ''} ${isOverAbove ? 'drag-over-above' : ''} ${isOverBelow ? 'drag-over-below' : ''}"
+      class="block-wrapper ${isDragging ? "dragging" : ""} ${isOverAbove ? "drag-over-above" : ""} ${isOverBelow ? "drag-over-below" : ""}"
       data-block-id="${block.id}"
     >
-      ${host.reorderEnabled
-        ? html`
+      ${
+        host.reorderEnabled
+          ? html`
             <span
               class="drag-handle"
               draggable="true"
@@ -29,13 +32,14 @@ function renderBlock(host: BlockManager, block: Block, index: number): TemplateR
               ⠿
             </span>
           `
-        : nothing}
+          : nothing
+      }
       <div
         class="block-content"
         contenteditable="true"
         data-type="${block.type}"
         data-block-id="${block.id}"
-        data-placeholder="${index === 0 ? host.placeholder : 'Type something...'}"
+        data-placeholder="${index === 0 ? host.placeholder : "Type something..."}"
         @input="${(e: InputEvent) => host.handleBlockInput(block.id, e)}"
         @keydown="${(e: KeyboardEvent) => host.handleBlockKeyDown(block.id, e)}"
         @focus="${() => host.handleBlockFocus(block.id)}"

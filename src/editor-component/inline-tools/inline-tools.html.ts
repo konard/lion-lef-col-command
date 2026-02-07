@@ -1,11 +1,11 @@
-import { html, TemplateResult } from 'lit';
-import type { InlineTools } from './inline-tools.js';
+import { html, TemplateResult } from "lit";
+import type { InlineTools } from "./inline-tools.js";
 
 export const template = (host: InlineTools): TemplateResult => html`
   <div class="toolbar" role="toolbar" aria-label="Text formatting tools">
     <button
       class="tool-btn"
-      @click="${() => host.execFormat('bold')}"
+      @click="${() => host.execFormat("bold")}"
       title="Bold"
       aria-label="Bold"
     >
@@ -13,7 +13,7 @@ export const template = (host: InlineTools): TemplateResult => html`
     </button>
     <button
       class="tool-btn"
-      @click="${() => host.execFormat('italic')}"
+      @click="${() => host.execFormat("italic")}"
       title="Italic"
       aria-label="Italic"
     >
@@ -21,7 +21,7 @@ export const template = (host: InlineTools): TemplateResult => html`
     </button>
     <button
       class="tool-btn"
-      @click="${() => host.execFormat('underline')}"
+      @click="${() => host.execFormat("underline")}"
       title="Underline"
       aria-label="Underline"
     >
@@ -29,7 +29,7 @@ export const template = (host: InlineTools): TemplateResult => html`
     </button>
     <button
       class="tool-btn"
-      @click="${() => host.execFormat('strikeThrough')}"
+      @click="${() => host.execFormat("strikeThrough")}"
       title="Strikethrough"
       aria-label="Strikethrough"
     >
@@ -40,7 +40,7 @@ export const template = (host: InlineTools): TemplateResult => html`
 
     <button
       class="tool-btn"
-      @click="${() => host.execFormat('createLink')}"
+      @click="${() => host.execFormat("createLink")}"
       title="Add link"
       aria-label="Add link"
     >

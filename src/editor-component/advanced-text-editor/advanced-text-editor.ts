@@ -1,48 +1,48 @@
-import { LitElement } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
-import { styles } from './advanced-text-editor.css.js';
-import { template } from './advanced-text-editor.html.js';
-import type { Block, EditorChangeEvent, BlockType } from '../types/editor-types.js';
-import type { AIProvider, AICompletionSuggestion } from '../types/ai-types.js';
-import type { CommandDefinition } from '../types/command-types.js';
-import type { InlineTool } from '../inline-tools/inline-tools.js';
-import { CompletionController } from '../controllers/completion-controller.js';
-import { getCaretCoordinates, calculatePopoverPosition } from '../utils/positioning.js';
-import { generateId } from '../utils/dom-helpers.js';
+import { LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
+import { styles } from "./advanced-text-editor.css.js";
+import { template } from "./advanced-text-editor.html.js";
+import type { Block, EditorChangeEvent, BlockType } from "../types/editor-types.js";
+import type { AIProvider, AICompletionSuggestion } from "../types/ai-types.js";
+import type { CommandDefinition } from "../types/command-types.js";
+import type { InlineTool } from "../inline-tools/inline-tools.js";
+import { CompletionController } from "../controllers/completion-controller.js";
+import { getCaretCoordinates, calculatePopoverPosition } from "../utils/positioning.js";
+import { generateId } from "../utils/dom-helpers.js";
 
-import '../block-manager/block-manager.js';
-import '../completion-menu/completion-menu.js';
-import '../command-palette/command-palette.js';
-import '../inline-tools/inline-tools.js';
-import '../ai-integration/ai-integration.js';
+import "../block-manager/block-manager.js";
+import "../completion-menu/completion-menu.js";
+import "../command-palette/command-palette.js";
+import "../inline-tools/inline-tools.js";
+import "../ai-integration/ai-integration.js";
 
-@customElement('advanced-text-editor')
+@customElement("advanced-text-editor")
 export class AdvancedTextEditor extends LitElement {
   static styles = styles;
 
   @property({ type: String })
-  placeholder = 'Start typing...';
+  placeholder = "Start typing...";
 
-  @property({ type: Boolean, attribute: 'ai-enabled' })
+  @property({ type: Boolean, attribute: "ai-enabled" })
   aiEnabled = false;
 
-  @property({ type: Boolean, attribute: 'completion-enabled' })
+  @property({ type: Boolean, attribute: "completion-enabled" })
   completionEnabled = true;
 
-  @property({ type: Boolean, attribute: 'commands-enabled' })
+  @property({ type: Boolean, attribute: "commands-enabled" })
   commandsEnabled = true;
 
-  @property({ type: Boolean, attribute: 'inline-tools-enabled' })
+  @property({ type: Boolean, attribute: "inline-tools-enabled" })
   inlineToolsEnabled = true;
 
-  @property({ type: Boolean, attribute: 'block-reorder-enabled' })
+  @property({ type: Boolean, attribute: "block-reorder-enabled" })
   blockReorderEnabled = true;
 
-  @property({ type: Boolean, attribute: 'read-only' })
+  @property({ type: Boolean, attribute: "read-only" })
   readOnly = false;
 
   @state()
-  blocks: Block[] = [{ id: generateId(), type: 'paragraph', content: '' }];
+  blocks: Block[] = [{ id: generateId(), type: "paragraph", content: "" }];
 
   @state()
   expanded = false;
@@ -57,7 +57,7 @@ export class AdvancedTextEditor extends LitElement {
   inlineToolsActive = false;
 
   @state()
-  selectedText = '';
+  selectedText = "";
 
   @state()
   completionPosition = { top: 0, left: 0 };
@@ -81,7 +81,7 @@ export class AdvancedTextEditor extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    document.addEventListener('selectionchange', this.handleSelectionChange);
+    document.addEventListener("selectionchange", this.handleSelectionChange);
     if (this.commandsEnabled) {
       this.registerDefaultCommands();
     }
@@ -89,14 +89,14 @@ export class AdvancedTextEditor extends LitElement {
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    document.removeEventListener('selectionchange', this.handleSelectionChange);
+    document.removeEventListener("selectionchange", this.handleSelectionChange);
     if (this.selectionCheckTimer) clearTimeout(this.selectionCheckTimer);
   }
 
   setAIProvider(provider: AIProvider): void {
     this.aiEnabled = true;
     this.updateComplete.then(() => {
-      const aiPanel = this.shadowRoot?.querySelector('ai-integration');
+      const aiPanel = this.shadowRoot?.querySelector("ai-integration");
       if (aiPanel) {
         (aiPanel as any).setProvider(provider);
       }
@@ -105,7 +105,7 @@ export class AdvancedTextEditor extends LitElement {
 
   registerCommand(command: CommandDefinition): void {
     this.updateComplete.then(() => {
-      const palette = this.shadowRoot?.querySelector('command-palette');
+      const palette = this.shadowRoot?.querySelector("command-palette");
       if (palette) {
         (palette as any).registerCommand(command);
       }
@@ -114,7 +114,7 @@ export class AdvancedTextEditor extends LitElement {
 
   registerCommands(commands: CommandDefinition[]): void {
     this.updateComplete.then(() => {
-      const palette = this.shadowRoot?.querySelector('command-palette');
+      const palette = this.shadowRoot?.querySelector("command-palette");
       if (palette) {
         (palette as any).registerCommands(commands);
       }
@@ -126,17 +126,17 @@ export class AdvancedTextEditor extends LitElement {
   }
 
   getContent(): string {
-    return this.blocks.map((b) => b.content).join('\n');
+    return this.blocks.map((b) => b.content).join("\n");
   }
 
   setContent(content: string): void {
-    const lines = content.split('\n').filter((l) => l.trim());
+    const lines = content.split("\n").filter((l) => l.trim());
     if (lines.length === 0) {
-      this.blocks = [{ id: generateId(), type: 'paragraph', content: '' }];
+      this.blocks = [{ id: generateId(), type: "paragraph", content: "" }];
     } else {
       this.blocks = lines.map((line) => ({
         id: generateId(),
-        type: 'paragraph' as BlockType,
+        type: "paragraph" as BlockType,
         content: line,
       }));
     }
@@ -164,7 +164,7 @@ export class AdvancedTextEditor extends LitElement {
     }
 
     this.dispatchEvent(
-      new CustomEvent('editor-change', {
+      new CustomEvent("editor-change", {
         detail: e.detail,
         bubbles: true,
         composed: true,
@@ -175,29 +175,29 @@ export class AdvancedTextEditor extends LitElement {
   handleBlockKeyDown(e: CustomEvent<{ blockId: string; event: KeyboardEvent }>): void {
     const { event: keyEvent } = e.detail;
 
-    if (keyEvent.key === 'Enter' && keyEvent.shiftKey) {
+    if (keyEvent.key === "Enter" && keyEvent.shiftKey) {
       keyEvent.preventDefault();
       this.expanded = !this.expanded;
       return;
     }
 
-    if (keyEvent.key === '/' && this.commandsEnabled) {
+    if (keyEvent.key === "/" && this.commandsEnabled) {
       this.openCommandPalette();
       return;
     }
 
     if (this.completionController.isActive) {
-      if (keyEvent.key === 'ArrowDown') {
+      if (keyEvent.key === "ArrowDown") {
         keyEvent.preventDefault();
         this.completionController.selectNext();
         return;
       }
-      if (keyEvent.key === 'ArrowUp') {
+      if (keyEvent.key === "ArrowUp") {
         keyEvent.preventDefault();
         this.completionController.selectPrevious();
         return;
       }
-      if (keyEvent.key === 'Tab' || keyEvent.key === 'Enter') {
+      if (keyEvent.key === "Tab" || keyEvent.key === "Enter") {
         const selected = this.completionController.getSelected();
         if (selected) {
           keyEvent.preventDefault();
@@ -205,7 +205,7 @@ export class AdvancedTextEditor extends LitElement {
           return;
         }
       }
-      if (keyEvent.key === 'Escape') {
+      if (keyEvent.key === "Escape") {
         this.completionController.dismiss();
         return;
       }
@@ -235,7 +235,7 @@ export class AdvancedTextEditor extends LitElement {
   }
 
   handleAIInsert(e: CustomEvent<{ text: string }>): void {
-    const blockManager = this.shadowRoot?.querySelector('block-manager') as any;
+    const blockManager = this.shadowRoot?.querySelector("block-manager") as any;
     if (blockManager) {
       const block = blockManager.addBlock();
       blockManager.updateBlockContent(block.id, e.detail.text);
@@ -252,7 +252,7 @@ export class AdvancedTextEditor extends LitElement {
     if (this.selectionCheckTimer) clearTimeout(this.selectionCheckTimer);
     this.selectionCheckTimer = setTimeout(() => {
       const selection = window.getSelection();
-      const text = selection?.toString().trim() ?? '';
+      const text = selection?.toString().trim() ?? "";
 
       if (text.length > 0) {
         this.selectedText = text;
@@ -267,7 +267,7 @@ export class AdvancedTextEditor extends LitElement {
         this.inlineToolsActive = true;
       } else {
         this.inlineToolsActive = false;
-        this.selectedText = '';
+        this.selectedText = "";
       }
     }, 300);
   };
@@ -281,7 +281,7 @@ export class AdvancedTextEditor extends LitElement {
     this.commandPaletteActive = true;
 
     this.updateComplete.then(() => {
-      const palette = this.shadowRoot?.querySelector('command-palette') as any;
+      const palette = this.shadowRoot?.querySelector("command-palette") as any;
       palette?.open({
         editor: this,
         blockId: this.focusedBlockId ?? undefined,
@@ -292,13 +292,14 @@ export class AdvancedTextEditor extends LitElement {
   private applyCompletion(suggestion: AICompletionSuggestion): void {
     if (!this.focusedBlockId) return;
 
-    const blockManager = this.shadowRoot?.querySelector('block-manager') as any;
+    const blockManager = this.shadowRoot?.querySelector("block-manager") as any;
     const block = this.blocks.find((b) => b.id === this.focusedBlockId);
     if (!block || !blockManager) return;
 
     const lastWord = this.getLastWord(block.content);
     if (lastWord) {
-      const newContent = block.content.slice(0, block.content.length - lastWord.length) + suggestion.text;
+      const newContent =
+        block.content.slice(0, block.content.length - lastWord.length) + suggestion.text;
       blockManager.updateBlockContent(this.focusedBlockId, newContent);
     }
 
@@ -316,85 +317,85 @@ export class AdvancedTextEditor extends LitElement {
 
   private getActiveCaretRect(): { x: number; y: number; width: number; height: number } | null {
     if (!this.focusedBlockId) return null;
-    const blockEl = this.shadowRoot?.querySelector(
-      `block-manager`,
-    )?.shadowRoot?.querySelector(
-      `[data-block-id="${this.focusedBlockId}"].block-content`,
-    ) as HTMLElement | null;
+    const blockEl = this.shadowRoot
+      ?.querySelector(`block-manager`)
+      ?.shadowRoot?.querySelector(
+        `[data-block-id="${this.focusedBlockId}"].block-content`,
+      ) as HTMLElement | null;
     if (!blockEl) return null;
     return getCaretCoordinates(blockEl);
   }
 
   private getLastWord(text: string): string {
-    const stripped = text.replace(/<[^>]*>/g, '');
+    const stripped = text.replace(/<[^>]*>/g, "");
     const match = stripped.match(/(\S+)$/);
-    return match ? match[1] : '';
+    return match ? match[1] : "";
   }
 
   private registerDefaultCommands(): void {
     const commands: CommandDefinition[] = [
       {
-        id: 'heading',
-        label: 'Heading',
-        description: 'Turn block into a heading',
-        icon: 'H',
-        category: 'basic',
+        id: "heading",
+        label: "Heading",
+        description: "Turn block into a heading",
+        icon: "H",
+        category: "basic",
         execute: (ctx) => {
-          const blockManager = this.shadowRoot?.querySelector('block-manager') as any;
+          const blockManager = this.shadowRoot?.querySelector("block-manager") as any;
           if (blockManager && ctx.blockId) {
-            blockManager.updateBlockType(ctx.blockId, 'heading');
+            blockManager.updateBlockType(ctx.blockId, "heading");
           }
         },
       },
       {
-        id: 'code',
-        label: 'Code Block',
-        description: 'Insert a code block',
-        icon: '<>',
-        category: 'basic',
+        id: "code",
+        label: "Code Block",
+        description: "Insert a code block",
+        icon: "<>",
+        category: "basic",
         execute: (ctx) => {
-          const blockManager = this.shadowRoot?.querySelector('block-manager') as any;
+          const blockManager = this.shadowRoot?.querySelector("block-manager") as any;
           if (blockManager && ctx.blockId) {
-            blockManager.updateBlockType(ctx.blockId, 'code');
+            blockManager.updateBlockType(ctx.blockId, "code");
           }
         },
       },
       {
-        id: 'quote',
-        label: 'Quote',
-        description: 'Turn block into a quote',
+        id: "quote",
+        label: "Quote",
+        description: "Turn block into a quote",
         icon: '"',
-        category: 'basic',
+        category: "basic",
         execute: (ctx) => {
-          const blockManager = this.shadowRoot?.querySelector('block-manager') as any;
+          const blockManager = this.shadowRoot?.querySelector("block-manager") as any;
           if (blockManager && ctx.blockId) {
-            blockManager.updateBlockType(ctx.blockId, 'quote');
+            blockManager.updateBlockType(ctx.blockId, "quote");
           }
         },
       },
       {
-        id: 'divider',
-        label: 'Divider',
-        description: 'Insert a horizontal divider',
-        icon: '—',
-        category: 'basic',
+        id: "divider",
+        label: "Divider",
+        description: "Insert a horizontal divider",
+        icon: "—",
+        category: "basic",
         execute: () => {
-          const blockManager = this.shadowRoot?.querySelector('block-manager') as any;
+          const blockManager = this.shadowRoot?.querySelector("block-manager") as any;
           if (blockManager) {
-            blockManager.addBlock('divider');
+            blockManager.addBlock("divider");
           }
         },
       },
       {
-        id: 'paragraph',
-        label: 'Paragraph',
-        description: 'Turn block into a paragraph',
-        icon: 'P',
-        category: 'basic',
+        id: "paragraph",
+        label: "Paragraph",
+        description: "Turn block into a paragraph",
+        icon: "P",
+        category: "basic",
         execute: (ctx) => {
-          const blockManager = this.shadowRoot?.querySelector('block-manager') as any;
+          const blockManager = this.shadowRoot?.querySelector("block-manager") as any;
           if (blockManager && ctx.blockId) {
-            blockManager.updateBlockType(ctx.blockId, 'paragraph');
+            blockManager.updateBlockType(ctx.blockId, "paragraph");
           }
         },
       },
@@ -406,6 +407,6 @@ export class AdvancedTextEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'advanced-text-editor': AdvancedTextEditor;
+    "advanced-text-editor": AdvancedTextEditor;
   }
 }

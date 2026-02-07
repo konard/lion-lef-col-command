@@ -1,9 +1,9 @@
-import { ReactiveController, ReactiveControllerHost } from 'lit';
-import type { AICompletionSuggestion } from '../types/ai-types.js';
-import { loadFromStorage, saveToStorage } from '../utils/storage.js';
-import { fuzzyMatch } from '../utils/dom-helpers.js';
+import { ReactiveController, ReactiveControllerHost } from "lit";
+import type { AICompletionSuggestion } from "../types/ai-types.js";
+import { loadFromStorage, saveToStorage } from "../utils/storage.js";
+import { fuzzyMatch } from "../utils/dom-helpers.js";
 
-const LEARNED_WORDS_KEY = 'learned-words';
+const LEARNED_WORDS_KEY = "learned-words";
 
 export class CompletionController implements ReactiveController {
   host: ReactiveControllerHost;
@@ -39,7 +39,7 @@ export class CompletionController implements ReactiveController {
   learnFromText(text: string): void {
     const words = text.split(/\s+/).filter((w) => w.length >= 3);
     for (const word of words) {
-      this.learnWord(word.replace(/[^\w]/g, ''));
+      this.learnWord(word.replace(/[^\w]/g, ""));
     }
   }
 
@@ -64,7 +64,7 @@ export class CompletionController implements ReactiveController {
         results.push({
           text: word,
           score: score + freq * 0.5,
-          source: 'local',
+          source: "local",
         });
       }
     }

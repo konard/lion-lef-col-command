@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'bun:test';
 import { generateId, sanitizeHTML, sanitizeRichHTML, debounce, throttle, fuzzyMatch } from '../src/editor-component/utils/dom-helpers.js';
 
 describe('generateId', () => {
@@ -56,6 +56,10 @@ describe('sanitizeRichHTML', () => {
 });
 
 describe('debounce', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('should delay function execution', async () => {
     vi.useFakeTimers();
     const fn = vi.fn();
@@ -68,9 +72,7 @@ describe('debounce', () => {
     expect(fn).not.toHaveBeenCalled();
 
     vi.advanceTimersByTime(60);
-    expect(fn).toHaveBeenCalledOnce();
-
-    vi.useRealTimers();
+    expect(fn).toHaveBeenCalledTimes(1);
   });
 
   it('should reset timer on repeated calls', () => {
@@ -85,19 +87,21 @@ describe('debounce', () => {
     expect(fn).not.toHaveBeenCalled();
 
     vi.advanceTimersByTime(30);
-    expect(fn).toHaveBeenCalledOnce();
-
-    vi.useRealTimers();
+    expect(fn).toHaveBeenCalledTimes(1);
   });
 });
 
 describe('throttle', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('should call immediately on first call', () => {
     const fn = vi.fn();
     const throttled = throttle(fn, 100);
 
     throttled();
-    expect(fn).toHaveBeenCalledOnce();
+    expect(fn).toHaveBeenCalledTimes(1);
   });
 
   it('should prevent calls within the throttle window', () => {
@@ -108,13 +112,11 @@ describe('throttle', () => {
     throttled();
     throttled();
     throttled();
-    expect(fn).toHaveBeenCalledOnce();
+    expect(fn).toHaveBeenCalledTimes(1);
 
     vi.advanceTimersByTime(110);
     throttled();
     expect(fn).toHaveBeenCalledTimes(2);
-
-    vi.useRealTimers();
   });
 });
 

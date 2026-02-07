@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import { MockAIProvider } from '../src/editor-component/utils/ai-provider.js';
 
 describe('MockAIProvider', () => {

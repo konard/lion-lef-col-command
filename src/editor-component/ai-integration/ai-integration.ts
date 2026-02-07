@@ -1,24 +1,24 @@
-import { LitElement } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
-import { styles } from './ai-integration.css.js';
-import { template } from './ai-integration.html.js';
-import { AIController } from '../controllers/ai-controller.js';
-import type { AIProvider } from '../types/ai-types.js';
+import { LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
+import { styles } from "./ai-integration.css.js";
+import { template } from "./ai-integration.html.js";
+import { AIController } from "../controllers/ai-controller.js";
+import type { AIProvider } from "../types/ai-types.js";
 
-@customElement('ai-integration')
+@customElement("ai-integration")
 export class AIIntegration extends LitElement {
   static styles = styles;
 
   aiController = new AIController(this);
 
   @state()
-  prompt = '';
+  prompt = "";
 
   @state()
-  response = '';
+  response = "";
 
   @property({ type: String })
-  context = '';
+  context = "";
 
   render() {
     return template(this);
@@ -31,12 +31,12 @@ export class AIIntegration extends LitElement {
   async sendPrompt(): Promise<void> {
     if (!this.prompt.trim()) return;
 
-    if (this.aiController.status === 'streaming') {
+    if (this.aiController.status === "streaming") {
       this.aiController.abort();
       return;
     }
 
-    this.response = '';
+    this.response = "";
     const result = await this.aiController.complete({
       prompt: this.prompt,
       context: this.context,
@@ -49,7 +49,7 @@ export class AIIntegration extends LitElement {
 
   async streamPrompt(): Promise<void> {
     if (!this.prompt.trim()) return;
-    this.response = '';
+    this.response = "";
     await this.aiController.streamResponse(
       { prompt: this.prompt, context: this.context, stream: true },
       (chunk) => {
@@ -60,7 +60,7 @@ export class AIIntegration extends LitElement {
 
   insertResponse(): void {
     this.dispatchEvent(
-      new CustomEvent('ai-insert', {
+      new CustomEvent("ai-insert", {
         detail: { text: this.response },
         bubbles: true,
         composed: true,
@@ -74,13 +74,13 @@ export class AIIntegration extends LitElement {
   }
 
   clearResponse(): void {
-    this.response = '';
-    this.prompt = '';
+    this.response = "";
+    this.prompt = "";
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ai-integration': AIIntegration;
+    "ai-integration": AIIntegration;
   }
 }
